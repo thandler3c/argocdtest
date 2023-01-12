@@ -1,0 +1,85 @@
+# Default values for Helm-Chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: crhubscus001.azurecr.io/loggerservice
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "408"
+
+environmentVariables:
+  netCoreEnvironment: QA
+  coreLogicUrl: https://api.coralogix.us:443/api/v1/logs
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  hosts:
+    - host: qa.sharedservices.firstunitedbank
+      paths:
+        - path: /logger(/|$)(.*)
+          pathType: Prefix
+
+  tls:
+   - secretName: sharedservices-tls-csi
+     hosts:
+       - qa.sharedservices.firstunitedbank.com
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+secretProviderClass:
+  keyvaultName: "kv-npd-scus-aks-002"
+  resourceGroup: "rg-npd-aks-scus"
+  aksKvCsiProviderID: "35ba907f-367c-4946-a0cc-4bab96b8735b"
+  subscriptionId: "06e49e42-36a9-41f2-8bed-74c36c61cf97"
+  tenantId: "64eaff51-c07c-4524-bf12-4264f02cc4fd"
+
+  secrets: 
+  - name: devqauat-sharedservices-firstunitedbank-com
+    type: secret
+
+  secretObjects:
+    secretName: sharedservices-tls-csi
+    data: 
+    - objectName: devqauat-sharedservices-firstunitedbank-com
+      key: tls.key
+    - objectName: devqauat-sharedservices-firstunitedbank-com
+      key: tls.crt

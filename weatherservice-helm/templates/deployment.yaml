@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "Helm-Chart.fullname" . }}
+  labels:
+    {{- include "Helm-Chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "Helm-Chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "Helm-Chart.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8}}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- range $k, $v := .Values.podEnvironmentVariables }}
+            - name: {{ quote $k }}
+              value: {{ quote $v }}
+          {{- end }}
+          ports:
+            {{- toYaml .Values.containerPorts | nindent 12 }}
+          {{- if .Values.secretProviderClass.enabled }}
+          volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+          {{- end}}
+          livenessProbe:
+            {{- toYaml .Values.containerLivenessProbe | nindent 12 }} 
+          readinessProbe:
+            {{- toYaml .Values.containerReadinesProbe | nindent 12 }}            
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.secretProviderClass.enabled }}
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "Helm-Chart.fullname" . }}
+      {{- end }}

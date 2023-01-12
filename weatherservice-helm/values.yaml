@@ -1,0 +1,74 @@
+# Default values for Helm-Chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Minimum of 2 replicas
+replicaCount: 2
+
+# Pod Security Context
+podSecurityContext:
+  # Set run as non root
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+
+podEnvironmentVariables: {}  
+
+podAnnotations: {}
+
+containerPorts:
+  - name: http
+    containerPort: 31000
+    protocol: TCP
+
+containerLivenessProbe:
+  httpGet:
+    path: /swagger
+    port: http
+
+containerReadinesProbe:
+  httpGet:
+    path: /swagger
+    port: http
+
+containerSecurityContext:
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_BIND_SERVICE
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 31000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
