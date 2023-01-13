@@ -8,7 +8,7 @@ image:
   repository: tomhandlertest123.azurecr.io/weatherservice
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3"
+  tag: "4"
 
 podEnvironmentVariables:
   ASPNETCORE_ENVIRONMENT: Development
