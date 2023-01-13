@@ -14,7 +14,9 @@ podEnvironmentVariables:
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_URLS: http://+:31000
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: dockerhub-secret
+  
 nameOverride: ""
 fullnameOverride: ""
 
