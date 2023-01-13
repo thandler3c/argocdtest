@@ -16,6 +16,12 @@ podEnvironmentVariables: {}
 
 podAnnotations: {}
 
+image:
+  repository: tomhandlertest123.azurecr.io/weatherservice
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "3"
+
 containerPorts:
   - name: http
     containerPort: 31000
@@ -37,6 +43,12 @@ containerSecurityContext:
       - ALL
     add:
       - NET_BIND_SERVICE
+
+secretProviderClass:
+  enabled: false
+
+ingress:
+  enabled: false
 
 imagePullSecrets: []
 nameOverride: ""
