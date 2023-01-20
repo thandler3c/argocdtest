@@ -1,82 +1,78 @@
 # Default values for Helm-Chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
 replicaCount: 2
-
 image:
-  repository: tomhandlertest123.azurecr.io/weatherservice
+  repository: tomhandler123.azurecr.io/weatherservice
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "4"
 
+  tag: "5"
 podEnvironmentVariables:
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_URLS: http://+:31000
-
 imagePullSecrets:
   - name: dockerhub-secret
-  
 nameOverride: ""
 fullnameOverride: ""
-
 podAnnotations: {}
-
 service:
   type: ClusterIP
   port: 80
   targetPort: 31000
-
 ingress:
   enabled: true
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    
   hosts:
     - host: dev.sharedservices.firstunitedbank.com
       paths:
         - path: /weather(/|$)(.*)
           pathType: Prefix
+          # tls: 
 
-  # tls: 
-  #  - secretName: sharedservices-tls-csi
-  #    hosts:
-  #      - dev.sharedservices.firstunitedbank.com
+          #  - secretName: sharedservices-tls-csi
 
+          #    hosts:
+
+          #      - dev.sharedservices.firstunitedbank.com
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# We usually recommend not to specify default resources and to leave this as a conscious
 
+# choice for the user. This also increases chances charts run on environments with little
+
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+
+# limits:
+
+#   cpu: 100m
+
+#   memory: 128Mi
+
+# requests:
+
+#   cpu: 100m
+
+#   memory: 128Mi
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
-
 secretProviderClass:
   enabled: false
-  keyvaultName: "kv-npd-scus-aks-002"
-  resourceGroup: "rg-npd-aks-scus"
-  aksKvCsiProviderID: "35ba907f-367c-4946-a0cc-4bab96b8735b"
-  subscriptionId: "06e49e42-36a9-41f2-8bed-74c36c61cf97"
-  tenantId: "64eaff51-c07c-4524-bf12-4264f02cc4fd"
-
-  secrets: 
-  - name: devqauat-sharedservices-firstunitedbank-com
-    type: secret
-
+  keyvaultName: kv-npd-scus-aks-002
+  resourceGroup: rg-npd-aks-scus
+  aksKvCsiProviderID: 35ba907f-367c-4946-a0cc-4bab96b8735b
+  subscriptionId: 06e49e42-36a9-41f2-8bed-74c36c61cf97
+  tenantId: 64eaff51-c07c-4524-bf12-4264f02cc4fd
+  secrets:
+    - name: devqauat-sharedservices-firstunitedbank-com
+      type: secret
   secretObjects:
     secretName: sharedservices-tls-csi
-    data: 
-    - objectName: devqauat-sharedservices-firstunitedbank-com
-      key: tls.key
-    - objectName: devqauat-sharedservices-firstunitedbank-com
-      key: tls.crt
+    data:
+      - objectName: devqauat-sharedservices-firstunitedbank-com
+        key: tls.key
+      - objectName: devqauat-sharedservices-firstunitedbank-com
+        key: tls.crt

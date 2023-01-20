@@ -17,7 +17,7 @@ podEnvironmentVariables: {}
 podAnnotations: {}
 
 image:
-  repository: tomhandlertest123.azurecr.io/weatherservice
+  repository: tomhandler123.azurecr.io/weatherservice
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "3"
